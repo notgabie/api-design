@@ -1,23 +1,34 @@
 import { Router } from "express";
 import { body, oneOf, validationResult } from "express-validator";
 import { handleInputErrors } from "./modules/middleware";
+import {
+  createProduct,
+  deleteProduct,
+  getProduct,
+  getProducts,
+} from "./handlers/product";
+import {
+  createUpdate,
+  deleteUpdate,
+  getUpdate,
+  getUpdates,
+  updateUpdate,
+} from "./handlers/update";
 
 const router = Router();
 
 /**
  * Product
  */
-router.get("/product", (req, res) => {
-  res.json({ message: "product" });
-});
+router.get("/product", getProducts);
 
-router.get("/product/:id", (req, res) => {});
+router.get("/product/:id", getProduct);
 
 router.post(
   "/product",
   body("name").isString(),
   handleInputErrors,
-  (req, res) => {}
+  createProduct
 );
 
 router.put(
@@ -27,7 +38,7 @@ router.put(
   (req, res) => {}
 );
 
-router.delete("/product/:id", (req, res) => {});
+router.delete("/product/:id", deleteProduct);
 
 /**
  * Update
@@ -36,34 +47,25 @@ router.delete("/product/:id", (req, res) => {});
 const putUpdateValidation = [
   body("title").optional(),
   body("body").optional(),
-  body('status').isIn(['IN_PROGRESS', 'DEPRECATED', 'SHIPPED']),
+  body("status").isIn(["IN_PROGRESS", "DEPRECATED", "SHIPPED"]).optional(),
   body("version").optional(),
 ];
 
 const postUpdateValidation = [
   body("title").exists().isString(),
   body("body").exists().isString(),
+  body("productId").exists().isString(),
 ];
 
-router.get("/update", (req, res) => {});
+router.get("/update", getUpdates);
 
-router.get("/update/:id", (req, res) => {});
+router.get("/update/:id", getUpdate);
 
-router.post(
-  "/update",
-  postUpdateValidation,
-  handleInputErrors,
-  (req, res) => {}
-);
+router.post("/update", postUpdateValidation, handleInputErrors, createUpdate);
 
-router.put(
-  "/update/:id",
-  putUpdateValidation,
-  handleInputErrors,
-  (req, res) => {}
-);
+router.put("/update/:id", putUpdateValidation, handleInputErrors, updateUpdate);
 
-router.delete("/update/:id", (req, res) => {});
+router.delete("/update/:id", deleteUpdate);
 
 /**
  * UpdatePoint
